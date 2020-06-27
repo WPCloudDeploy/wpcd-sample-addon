@@ -9,6 +9,8 @@ There is another sample inactive button and an inactive text field.
 You can use this plugin as a starting point to create your own
 addons for wpcd.
 
+![Image of what this add-on looks like](https://www.screencast.com/t/0D4kVbnfGE)
+
 ### Change Log ###
 1.0.0
 ------
