@@ -1,4 +1,9 @@
 <?php
+/**
+ * Class for adding a new tab to the application details screen.
+ *
+ * @package WPCD
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -7,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class for adding a new tab to the application details screen.
  */
-class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
+class WPCD_WordPress_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 
 	/**
 	 * WPCD_WORDPRESS_TABS_PHP constructor.
@@ -66,6 +71,9 @@ class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 	 *
 	 * Filter hook: wpcd_app_{$this->get_app_name()}_get_tabs
 	 *
+	 * @param array $fields list of existing fields.
+	 * @param int   $id post id of app being worked with.
+	 *
 	 * @return array Array of actions, complying with the structure necessary by metabox.io fields.
 	 */
 	public function get_tab_fields_sample( array $fields, $id ) {
@@ -119,10 +127,10 @@ class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 	 */
 	private function get_server_fields_sample( $id ) {
 
-		// Set up metabox items
+		// Set up metabox items.
 		$actions = array();
 
-		// Heading
+		// Heading.
 		$sample_desc  = __( 'Sample heading with some instructions and notes if you want.', 'wpcd' );
 		$sample_desc .= '<br />';
 
@@ -149,8 +157,8 @@ class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 			'raw_attributes' => array(
 				'std'                 => __( 'Update All Plugins', 'wpcd' ),
 				'desc'                => __( 'Update all plugins on the site - this is real and will update all plugins on the site!', 'wpcd' ),
-				// fields that contribute data for this action
-				'data-wpcd-fields'    => json_encode( array( '#wpcd_app_action_sample-action-field-01' ) ),                 // make sure we give the user a confirmation prompt
+				// fields that contribute data for this action.
+				'data-wpcd-fields'    => wp_json_encode( array( '#wpcd_app_action_sample-action-field-01' ) ), // make sure we give the user a confirmation prompt.
 				'confirmation_prompt' => __( 'Are you sure you would like to update all plugins?', 'wpcd' ),
 			),
 			'type'           => 'button',
@@ -161,8 +169,8 @@ class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 			'raw_attributes' => array(
 				'std'                 => __( 'Update All Themes', 'wpcd' ),
 				'desc'                => __( 'Update all themes on the site - this is just another button but it does nothing.', 'wpcd' ),
-				// fields that contribute data for this action
-				'data-wpcd-fields'    => json_encode( array( '#wpcd_app_action_sample-action-field-01' ) ),                 // make sure we give the user a confirmation prompt
+				// fields that contribute data for this action.
+				'data-wpcd-fields'    => wp_json_encode( array( '#wpcd_app_action_sample-action-field-01' ) ), // make sure we give the user a confirmation prompt.
 				'confirmation_prompt' => __( 'Are you sure you would like to update all themes?', 'wpcd' ),
 			),
 			'type'           => 'button',
@@ -175,18 +183,18 @@ class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 	/**
 	 * Sample Action "A": updates all plugins on the site.
 	 *
-	 * @param int    $id         The postID of the server cpt
-	 * @param string $action     The action to be performed (this matches the string required in the bash scripts if bash scripts are used )
+	 * @param int    $id         The postID of the server cpt.
+	 * @param string $action     The action to be performed (this matches the string required in the bash scripts if bash scripts are used).
 	 *
 	 * @return boolean success/failure/other
 	 */
-
 	private function sample_action_a( $id, $action ) {
 
 		// Get the instance details.
 		$instance = $this->get_app_instance_details( $id );
 
 		if ( is_wp_error( $instance ) ) {
+			/* translators: %s is replaced with the name of the action being executed */
 			return new \WP_Error( sprintf( __( 'Unable to execute this request because we cannot get the instance details for action %s', 'wpcd' ), $action ) );
 		}
 
@@ -199,7 +207,7 @@ class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 		// Then it lists the folder name (this is unnecessary but included here just to show how bash chaining works if you're not familiar with it.
 		// Finally it runs the wp-cli plugin update command.
 		// The full command will look like this: 'cd /var/www/my.domain.com/html && pwd && sudo -u my.domain.com wp plugin update --all'.
-		$command = 'cd /var/www/' . $domain . '/html' . ' && pwd && sudo -u ' . $domain . ' wp plugin update --all';
+		$command = "cd /var/www/$domain/html && pwd && sudo -u $domain wp plugin update --all";
 
 		// Send the command and wait for a reply.
 		// This command needs to complete within the limits of the PHP Execution timeout.
@@ -224,4 +232,4 @@ class WPCD_WORDPRESS_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 
 }
 
-new WPCD_WORDPRESS_TABS_APP_SAMPLE();
+new WPCD_WordPress_TABS_APP_SAMPLE();

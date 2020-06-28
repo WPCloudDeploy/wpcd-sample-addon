@@ -1,13 +1,12 @@
 <?php
-
-/*
-Plugin Name: WPCD Sample Add-on
-Plugin URI: https://wpclouddeploy.com
-Description: A sample add-on for the WPCloudPanel (formerly WPCloudDeploy) plugin
-Version: 1.0.0
-Author: WPCloudDeploy
-Author URI: https://wpclouddeploy.com
-*/
+/**
+ * Plugin Name: WPCD Sample Add-on
+ * Plugin URI: https://wpclouddeploy.com
+ * Description: A sample add-on for the WPCloudPanel (formerly WPCloudDeploy) plugin
+ * Version: 1.0.0
+ * Author: WPCloudDeploy
+ * Author URI: https://wpclouddeploy.com
+ */
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
@@ -16,18 +15,20 @@ require_once ABSPATH . 'wp-admin/includes/plugin.php';
  */
 class WPCD_Sample_AddOn {
 
-	// constructor function of course.
+	/**
+	 *  Constructor function of course.
+	 */
 	public function __construct() {
 		$plugin_data = get_plugin_data( __FILE__ );
 
-		if ( ! defined( 'wpcdsample_url' ) ) {
-			define( 'wpcdsample_url', plugin_dir_url( __FILE__ ) );
-			define( 'wpcdsample_path', plugin_dir_path( __FILE__ ) );
-			define( 'wpcdsample_plugin', plugin_basename( __FILE__ ) );
-			define( 'wpcdsample_extension', $plugin_data['Name'] );
-			define( 'wpcdsample_version', $plugin_data['Version'] );
-			define( 'wpcdsample_textdomain', 'wpcd' );
-			define( 'wpcdsample_requires', '2.0.3' );
+		if ( ! defined( 'WPCDSAMPLE_URL' ) ) {
+			define( 'WPCDSAMPLE_URL', plugin_dir_url( __FILE__ ) );
+			define( 'WPCDSAMPLE_PATH', plugin_dir_path( __FILE__ ) );
+			define( 'WPCDSAMPLE_PLUGIN', plugin_basename( __FILE__ ) );
+			define( 'WPCDSAMPLE_EXTENSION', $plugin_data['Name'] );
+			define( 'WPCDSAMPLE_VERSION', $plugin_data['Version'] );
+			define( 'WPCDSAMPLE_VERSION', 'wpcd' );
+			define( 'WPCDAMPLE_REQUIRES', '2.0.3' );
 		}
 
 		/* Run things after WordPress is loaded */
@@ -53,10 +54,12 @@ class WPCD_Sample_AddOn {
 	 * Action Hook: wpcd_wpapp_include_app_tabs
 	 */
 	public function required_wpapp_tab_files() {
-		include_once wpcdsample_path . '/includes/wpapp-tabs-sample.php';
+		include_once WPCDSAMPLE_PATH . '/includes/wpapp-tabs-sample.php';
 	}
 
 	/**
+	 * Placeholder activation function.
+	 *
 	 * @TODO: You can hook into this function with a WP filter
 	 * if you need to do things when the plugin is activated.
 	 * Right now nothing in this gets executed.
@@ -65,11 +68,11 @@ class WPCD_Sample_AddOn {
 		// first install.
 		$version = get_option( 'wpcdsample_version' );
 		if ( ! $version ) {
-			update_option( 'wpcdsample_last_version_upgrade', wpcdsample_version );
+			update_option( 'wpcdsample_last_version_upgrade', WPCDSAMPLE_VERSION );
 		}
 
-		if ( $version != wpcdsample_version ) {
-			update_option( 'wpcd_version', wpcdsample_version );
+		if ( WPCDSAMPLE_VERSION !== $version ) {
+			update_option( 'wpcd_version', WPCDSAMPLE_VERSION );
 		}
 
 		// Some setup options here?
