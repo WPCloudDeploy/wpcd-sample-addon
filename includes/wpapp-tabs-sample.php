@@ -164,7 +164,7 @@ class WPCD_WordPress_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 			'label'          => __( 'Update Plugins', 'wpcd' ),
 			'raw_attributes' => array(
 				'std'                 => __( 'Update All Plugins', 'wpcd' ),
-				'desc'                => __( 'Update all plugins on the site - this is real and will update all plugins on the site!', 'wpcd' ),
+				'desc'                => __( 'Update all plugins on the site', 'wpcd' ),
 				// fields that contribute data for this action.
 				'data-wpcd-fields'    => wp_json_encode( array( '#wpcd_app_action_sample-action-field-01' ) ),
 				// make sure we give the user a confirmation prompt.
