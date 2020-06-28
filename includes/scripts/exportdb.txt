@@ -1,0 +1,7 @@
+echo "done" && {
+	sudo -i -E cd /root && 
+    sudo -u ##DOMAIN## wp db export /var/www/##DOMAIN##/html/exportdb.dump --path=/var/www/##DOMAIN##/html >> ##SCRIPT_LOGS##.log.intermed 2>&1 &&
+    sudo -E mv ##SCRIPT_LOGS##.log.intermed ##SCRIPT_LOGS##.log.done &&
+    sudo -E wget -q ##CALLBACK_URL##;
+} > /dev/null 2>&1 &
+
