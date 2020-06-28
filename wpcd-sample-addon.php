@@ -27,7 +27,7 @@ class WPCD_Sample_AddOn {
 			define( 'WPCDSAMPLE_PLUGIN', plugin_basename( __FILE__ ) );
 			define( 'WPCDSAMPLE_EXTENSION', $plugin_data['Name'] );
 			define( 'WPCDSAMPLE_VERSION', $plugin_data['Version'] );
-			define( 'WPCDSAMPLE_VERSION', 'wpcd' );
+			define( 'WPCDSAMPLE_TEXTDOMAIN', 'wpcd' );
 			define( 'WPCDAMPLE_REQUIRES', '2.0.3' );
 		}
 
