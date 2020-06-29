@@ -314,6 +314,8 @@ class WPCD_WordPress_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 	 *
 	 * This action is going to be handled with a console shown on the screen.  Which is different from the "A" and "B" actions.
 	 * This is an example of a long running action.
+	 * Note: You cannot use long-running actions in this style on the server tabs! If you want to connect a long-running action
+	 * for a server level command that is not tied to a WP site, you should still initiate it from a WP site.
 	 *
 	 * @param int    $id         The postID of the server cpt.
 	 * @param string $action     The action to be performed (this matches the string required in the bash scripts if bash scripts are used).
