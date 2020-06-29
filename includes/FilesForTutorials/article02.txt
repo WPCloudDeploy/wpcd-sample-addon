@@ -1,0 +1,5 @@
+echo "done" && {
+sudo -E tar -vczf /var/www/##DOMAIN##/html/backupfiles.gz /var/www/##DOMAIN##/html/ >> ##SCRIPT_LOGS##.log.intermed 2>&1 ;
+sudo -E mv ##SCRIPT_LOGS##.log.intermed ##SCRIPT_LOGS##.log.done ;
+sudo -E wget -q ##CALLBACK_URL##;
+} > /dev/null 2>&1 &
