@@ -73,9 +73,10 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 
 		$field = array();
 
-		$field['name']         = 'wp_traffic';
-		$field['location']     = 'wordpress-app-new-app-popup';
+		$field['name']         = 'wp_traffic';  // The name of the field - it should match the field id/name used above.
+		$field['location']     = 'wordpress-app-new-app-popup';  // The field is shown on the popup when creating a new site in wp-admin as you can see in the function above.
 		$field['script_merge'] = true;
+		$field['script_name']  = 'install_wordpress_site.txt';  // This is the name of the script file that acts as bridge between the plugin and the main bash script that does all the heavy lifting.
 
 		WPCD_CUSTOM_FIELDS()->add_field( $field['name'], $field );
 
