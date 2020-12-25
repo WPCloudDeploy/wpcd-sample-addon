@@ -3,7 +3,7 @@
  * Plugin Name: WPCD Sample Add-on
  * Plugin URI: https://wpclouddeploy.com
  * Description: A sample add-on for the WPCloudPanel (formerly WPCloudDeploy) plugin
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: WPCloudDeploy
  * Author URI: https://wpclouddeploy.com
  */
@@ -46,6 +46,7 @@ class WPCD_Sample_AddOn {
 	 */
 	public function required_files() {
 		include_once wpcd_path . 'includes/core/apps/wordpress-app/tabs/tabs.php';
+		include_once WPCDSAMPLE_PATH . '/includes/wpapp-tutorial04.php';
 	}
 
 	/**
