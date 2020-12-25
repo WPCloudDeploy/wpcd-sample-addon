@@ -27,7 +27,6 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 		// Hook to add a custom field into the custom fields array - this will link fields added to the screen using the hook above to a public array of fields.
 		add_action( 'init', array( $this, 'add_custom_fields' ), 10 );
 
-		// add_filter( 'wpcd_wordpress-app_install_wp_app_parms', array( $this, 'install_wp_app_parms' ), 10, 2 );
 	}
 
 
@@ -62,25 +61,6 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 			</select>
 		</div>		
 		<?php
-	}
-
-	/**
-	 * Move data from the form into an array that will transfer the data
-	 * to the BASH scripts.
-	 *
-	 * Filter Hook: wpcd_wordpress-app_install_wp_app_parms
-	 *
-	 * Hook Documentation: https://wpclouddeploy.com/documentation/wpcloud-deploy-dev-notes/filter-hook-wpcd_wordpress-app_install_app_popup/
-	 *
-	 * @param array $additional A key-value array that will be transfered to the BASH scripts.
-	 * @param array $args       A text sanitized array of data that was entered on the create site popup form.
-	 */
-	public function install_wp_app_parms( $additional, $args ) {
-		if ( isset( $args['wp_traffic'] ) ) {
-			$additional['wp_traffic'] = $args['wp_traffic'];  // $args should already be sanitized.
-		}
-
-		return $additional;
 	}
 
 	/**
