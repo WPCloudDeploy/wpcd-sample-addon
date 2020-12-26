@@ -25,7 +25,7 @@ class WPCD_WordPress_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 		add_filter( "wpcd_app_{$this->get_app_name()}_get_tabs", array( $this, 'get_tab_fields_sample' ), 10, 2 );
 		add_filter( "wpcd_app_{$this->get_app_name()}_tab_action", array( $this, 'tab_action_sample' ), 10, 3 );
 
-		add_action( "wpcd_command_{$this->get_app_name()}_completed", array( $this, 'command_completed_sample' ), 10, 1 );
+		add_action( "wpcd_command_{$this->get_app_name()}_completed", array( $this, 'command_completed_sample' ), 10, 2 );
 
 		// Filter to make sure we give the correct file path when merging contents.
 		add_filter( 'wpcd_script_file_name', array( $this, 'wpcd_script_file_name' ), 10, 2 );

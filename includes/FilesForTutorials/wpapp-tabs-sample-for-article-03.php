@@ -405,7 +405,7 @@ class WPCD_WordPress_TABS_APP_SAMPLE extends WPCD_WORDPRESS_TABS {
 	/**
 	 * Different scripts needs different placeholders/handling.
 	 *
-	 * Filter Hook: wpcd_script_placeholders_{$this->get_app_name()}
+	 * Filter Hook: wpcd_wpapp_replace_script_tokens
 	 *
 	 * @param array  $new_array          Existing array of placeholder data.
 	 * @param array  $array              The original array of data passed into the core 'script_placeholders' function.
