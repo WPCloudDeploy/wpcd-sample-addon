@@ -1,7 +1,6 @@
 <?php
 /**
- * Class for handling hooks and filters for the 4th article in our tutorial series.
- * https://wpclouddeploy.com/tutorial-add-custom-functionality-to-wpcd-part-4/
+ * Class for handling hooks and filters for the 5th article in our tutorial series.
  *
  * @package WPCD
  */
@@ -13,25 +12,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class for adding a new tab to the application details screen.
  */
-class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
+class WPCD_WordPress_Tutorial_05 extends WPCD_APP {
 
 	/**
-	 * WPCD_WordPress_Tutorial_04 constructor.
+	 * WPCD_WordPress_Tutorial_05 constructor.
 	 */
 	public function __construct() {
 
 		parent::__construct();
 
-		// Hook to add a field to the create WordPress site popup.
-		add_action( 'wpcd_wordpress-app_install_app_popup_after_form_open', array( $this, 'install_app_popup_after_form_open' ), 10, 2 );
+		// Hook to add a field to the create new server popup.
+		add_action( 'wpcd_wordpress-app_create_popup_before_install_button', array( $this, 'create_popup_before_install_button' ), 10, 2 );
 
 		// Hook to add a custom field into the custom fields array - this will link fields added to the screen using the hook above to a public array of fields.
 		add_action( 'init', array( $this, 'add_custom_fields' ), 10 );
 
 		// Filter to handle script file tokens - but we're not going to replace tokens.  We're going to replace the
-		// primary bash script name and path that installs WordPress.
+		// primary bash script name and path that installs the core server components.
 		add_filter( 'wpcd_wpapp_replace_script_tokens', array( $this, 'wpcd_wpapp_replace_script' ), 10, 7 );
-
 	}
 
 
@@ -43,23 +41,21 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 	 * @param int    $server_id The postID of the server cpt.
 	 * @param string $user_id   The user id of the logged in admin performing the action.
 	 */
-	public function install_app_popup_after_form_open( $server_id, $user_id ) {
+	public function create_popup_before_install_button( $server_id, $user_id ) {
 		?>
-		<div class="wpcd-create-popup-label-wrap"><label class="wpcd-create-popup-label" for="wp_traffic"> <?php echo __( 'Estimated Level of Traffic For New Site', 'wpcd' ); ?>  </label></div>
+		<div class="wpcd-create-popup-label-wrap"><label class="wpcd-create-popup-label" for="port_25"> <?php echo __( 'Open Port 25?', 'wpcd' ); ?>  </label></div>
 		<div class="wpcd-create-popup-input-wrap wpcd-create-popup-input-wp-version-select2-wrap">
 			<?php
-				$traffic_options = array(
-					'low'       => 'Low Traffic',
-					'medium'    => 'Medium Traffic',
-					'high'      => 'High Traffic',
-					'superhigh' => 'Super High Traffic',
+				$port_25_options = array(
+					'1' => 'Yes',
+					'0' => 'No',
 				);
 				?>
-			<select name="wp_traffic" id="wpcd-wp-traffic" style="width: 150px;">
+			<select name="port_25" id="wpcd-server-port-25" style="width: 150px;">
 				<?php
-				foreach ( $traffic_options as $key => $traffic_option ) {
+				foreach ( $port_25_options as $key => $port_25_option ) {
 					?>
-						<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $traffic_option ); ?></option>
+						<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $port_25_option ); ?></option>
 						<?php
 				}
 				?>
@@ -78,21 +74,12 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 
 		$field = array();
 
-		$field['name']         = 'wp_traffic';  // The name of the field - it should match the field id/name used above.
-		$field['location']     = 'wordpress-app-new-app-popup';  // The field is shown on the popup when creating a new site in wp-admin as you can see in the function above.
+		$field['name']         = 'port_25';  // The name of the field - it should match the field id/name used above.
+		$field['location']     = 'wordpress-app-new-server-popup';  // The field is shown on the popup when creating a new server in wp-admin as you can see in the function above.
 		$field['script_merge'] = true;
-		$field['script_name']  = 'install_wordpress_site.txt';  // This is the name of the script file that acts as bridge between the plugin and the main bash script that does all the heavy lifting.
+		$field['script_name']  = 'after-server-create-run-commands.txt';  // This is the name of the script file that acts as bridge between the plugin and the main bash script that does all the heavy lifting.
 
 		WPCD_CUSTOM_FIELDS()->add_field( $field['name'], $field );
-
-		/* This field here isn't used - it's just to show that you can add additional fields for different locations that can be used by other code outside of the new WordPress site popup. */
-		$field2 = array();
-
-		$field2['name']         = 'wp_server_custom_description';
-		$field2['location']     = 'wordpress-app-wp_server';
-		$field2['script_merge'] = false;
-
-		WPCD_CUSTOM_FIELDS()->add_field( $field2['name'], $field2 );
 
 	}
 
@@ -118,8 +105,8 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 	 */
 	public function wpcd_wpapp_replace_script( $new_array, $array, $script_name, $script_version, $instance, $command, $additional ) {
 
-		if ( 'install_wordpress_site.txt' === $script_name ) {
-			$new_array['SCRIPT_URL'] = trailingslashit( WPCDSAMPLE_URL ) . 'includes/scripts/my_custom_install_wp_site.txt';
+		if ( 'after-server-create-run-commands.txt' === $script_name ) {
+			$new_array['SCRIPT_URL'] = trailingslashit( WPCDSAMPLE_URL ) . 'includes/scripts/my-prepare-server.txt';
 		}
 
 		return $new_array;
@@ -128,4 +115,4 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 
 }
 
-new WPCD_WordPress_Tutorial_04();
+new WPCD_WordPress_Tutorial_05();

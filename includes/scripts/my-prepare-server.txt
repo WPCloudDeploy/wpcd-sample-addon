@@ -1,0 +1,384 @@
+#!/bin/bash
+if [[ "$EUID" -ne 0 ]]; then
+	echo "Sorry, you need to run this as root"
+	exit
+fi
+
+
+if [[ "$interactive" != "no" ]]; then
+    clear
+    echo "This script will install NGINX, MariaDB, PHP, Certbot and WP-CLI in your system"
+    echo
+    read -p "Press enter to start setup"
+fi
+
+
+# clear the screen
+clear
+
+echo "Running my custom server script now..."
+echo "Port 25 variable is:" $port_25
+
+# Refresh existing repositories
+echo "Refreshing repositories..."
+apt-get update > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+
+# Create directory if it doesn't exist. Else, add-apt-repository will be unable to configure the PPAs
+mkdir -p /etc/apt/sources.list.d/
+
+# Adding common software properties stack
+echo "Adding common software properties to make repository management easier..."
+apt-get install software-properties-common -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+
+# Adding additional repositories
+echo "Adding additional repositories..."
+LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/nginx -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+
+# Adding and installing LEMP stack
+# @TODO: We should probably make a loop and loop through all these packages one by one 
+echo "Installing LEMP stack - this will take a while!"
+apt-get install nginx mariadb-server mariadb-client certbot python3-certbot-nginx apache2-utils unzip rename -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+
+
+# Adding and installing PHP stack
+echo "Installing PHP versions - this will take a while too!"
+apt-get install php5.6 php5.6-fpm php5.6-mbstring php5.6-curl php5.6-mysql php5.6-xml php5.6-zip php5.6-gd php5.6-imap php5.6-soap php5.6-bcmath php5.6-imagick -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+apt-get install php7.1 php7.1-fpm php7.1-mbstring php7.1-curl php7.1-mysql php7.1-xml php7.1-zip php7.1-gd php7.1-imap php7.1-soap php7.1-bcmath php7.1-imagick -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+apt-get install php7.2 php7.2-fpm php7.2-mbstring php7.2-curl php7.2-mysql php7.2-xml php7.2-zip php7.2-gd php7.2-imap php7.2-soap php7.2-bcmath php7.2-imagick -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+apt-get install php7.3 php7.3-fpm php7.3-mbstring php7.3-curl php7.3-mysql php7.3-xml php7.3-zip php7.3-gd php7.3-imap php7.3-soap php7.3-bcmath php7.3-imagick -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+apt-get install php7.4 php7.4-fpm php7.4-mbstring php7.4-curl php7.4-mysql php7.4-xml php7.4-zip php7.4-gd php7.4-imap php7.4-soap php7.4-bcmath php7.4-imagick -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+apt-get install php8.0 php8.0-fpm php8.0-mbstring php8.0-curl php8.0-mysql php8.0-xml php8.0-zip php8.0-gd php8.0-imap php8.0-soap php8.0-bcmath php8.0-imagick -y > /dev/null 2>&1
+if [ $? -ne 0 ]  
+then
+	echo "Failed!  Quitting process"
+	exit
+fi
+# Use PHP 7.4 as the default
+update-alternatives --set php /usr/bin/php7.4
+
+
+# if the unattended-upgrades package isn't installed, install it
+if ! dpkg -s unattended-upgrades &>/dev/null; then
+	echo "Installing Unattended Upgrade process since it was not enabled on this server..."
+	apt-get install -y unattended-upgrades
+fi
+
+
+
+# enable unattended-upgrades
+echo 'APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";' > /etc/apt/apt.conf.d/20auto-upgrades
+
+
+
+# Set up unattended upgrades for the PPAs
+echo "Adding additional repositories to unattended upgrade process..."
+sed -i '/Unattended-Upgrade::Allowed-Origins /a "LP-PPA-ondrej-nginx:${distro_codename}";' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i '/Unattended-Upgrade::Allowed-Origins /a "LP-PPA-ondrej-php:${distro_codename}";' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i '/Unattended-Upgrade::Allowed-Origins /a "LP-PPA-certbot-certbot:${distro_codename}";' /etc/apt/apt.conf.d/50unattended-upgrades
+
+
+
+# Update php.ini file to increase filesize uploads allowed in WordPress
+echo "Adding required entries in php.ini to allow for larger file uploads in WordPress..."
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 25M/g" /etc/php/5.6/fpm/php.ini
+sed -i "s/post_max_size = 8M/post_max_size = 25M/g" /etc/php/5.6/fpm/php.ini
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 25M/g" /etc/php/7.1/fpm/php.ini
+sed -i "s/post_max_size = 8M/post_max_size = 25M/g" /etc/php/7.1/fpm/php.ini
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 25M/g" /etc/php/7.2/fpm/php.ini
+sed -i "s/post_max_size = 8M/post_max_size = 25M/g" /etc/php/7.2/fpm/php.ini
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 25M/g" /etc/php/7.3/fpm/php.ini
+sed -i "s/post_max_size = 8M/post_max_size = 25M/g" /etc/php/7.3/fpm/php.ini
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 25M/g" /etc/php/7.4/fpm/php.ini
+sed -i "s/post_max_size = 8M/post_max_size = 25M/g" /etc/php/7.4/fpm/php.ini
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 25M/g" /etc/php/8.0/fpm/php.ini
+sed -i "s/post_max_size = 8M/post_max_size = 25M/g" /etc/php/8.0/fpm/php.ini
+
+
+# Restarting php
+echo "Restarting PHP processes..."
+systemctl restart php5.6-fpm > /dev/null 2>&1
+systemctl restart php7.1-fpm > /dev/null 2>&1
+systemctl restart php7.2-fpm > /dev/null 2>&1
+systemctl restart php7.3-fpm > /dev/null 2>&1
+systemctl restart php7.4-fpm > /dev/null 2>&1
+systemctl restart php8.0-fpm > /dev/null 2>&1
+
+# Install rate limiting zone for wp-login.php (the seven back-slashes are to insert spaces before the actual line is inserted )
+sed -i '/default_type application\/octet-stream;/a \ \n \ \ \ \ \ \ \ # Set zone to restrict rate of trying certain actions - primarily logins \n \ \ \ \ \ \ \ limit_req_zone \$binary_remote_addr zone=WPLOGIN:10m rate=4r\/s;' /etc/nginx/nginx.conf
+
+# Create some folders to hold user custom config files
+mkdir -p /etc/nginx/userconfigs/
+mkdir -p /etc/nginx/userconfigs/http		# User custom configs for the the http block will go here.
+mkdir -p /etc/nginx/userconfigs/server		# User custom configs for the server block will go here.
+mkdir -p /etc/nginx/userconfigs/site		# User custom configs for a particular site will go here.
+
+
+# create /etc/nginx/common/6g.conf, which will contain the 6G Firewall 
+echo "Installing 6G Firewall..."
+mkdir -p /etc/nginx/common/
+cat > /etc/nginx/common/6g.conf << 'EOF'
+# 6G Firewall mappings adapted from https://perishablepress.com/6g/
+
+# User agents
+map $http_user_agent $bad_bot {
+	default 0;
+	"~*([a-z0-9]{2000})" 1;
+	~*(archive.org|binlar|casper|checkpriv|choppy|clshttp|cmsworld|diavol|dotbot|extract|feedfinder|flicky|g00g1e|harvest|heritrix|htmlparser|libwww|httrack|kmccrew|loader|miner|nikto|nutch|planetwork|postrank|purebot|pycurl|python|seekerspider|siclab|skygrid|sqlmap|sucker|turnit|vikspider|winhttp|xxxyy|youda|zmeu|zune) 2;
+}
+
+# Referrers
+map $http_referer $bad_referer {
+	default 0;
+	"~*([a-z0-9]{2000})" 1;
+	~*(semalt.com|todaperfeita) 2;
+}
+
+# Query strings
+map $query_string $bad_querystring {
+	default 0;
+	~*(eval\() 1;
+	~*(127\.0\.0\.1) 2;
+	"~*([a-z0-9]{2000})" 3;
+	"~*(javascript:)(.*)(;)" 4;
+	~*(base64_encode)(.*)(\() 5;
+	~*(GLOBALS|REQUEST)(=|\[|%) 6;
+	~*(<|%3C)(.*)script(.*)(>|%3) 7;
+	~*(\\|\.\.\.|\.\./|~|`|<|>|\|) 8;
+	~*(boot\.ini|etc/passwd|self/environ) 9;
+	~*(thumbs?(_editor|open)?|tim(thumb)?)\.php 10;
+	~*(\'|\")(.*)(drop|insert|md5|select|union|concat) 11;
+    ~*(/|%2f)(:|%3a)(/|%2f) 12;
+}
+
+# Request strings
+map $request_uri $bad_request {
+	default 0;
+	"~*([a-z0-9]{2000})" 1;
+	~*(ftp|php):/ 2;
+	~*(base64_encode)(.*)(\() 3;
+	~*(=\\\'|=\\%27|/\\\'/?)\. 4;
+	"~*/(\$(\&)?|\*|\"|\.ht|,|&|&amp;?)/?$" 5;
+	~*(\{0\}|\(/\(|\.\.\.|\+\+\+|\\\"\\\") 6;
+	"~*(~|`|<|>|;|\\|\s|\{|\}|\[|\]|\|)" 7;
+	~*/(=|\$&|_mm|cgi-|etc/passwd|muieblack) 8;
+	"~*(&pws=0|\_vti\_|\(null\)|\{\$itemURL\}|echo(.*)kae|etc/passwd|eval\(|self/environ)" 9;
+	~*\.(aspx?|bash|bak?|cfg|cgi|dll|exe|git|hg|ini|jsp|log|mdb|out|sql|svn|swp|tar|rar|rdf)$ 10;
+	~*/(^$|(wp-)?config|mobiquo|phpinfo|shell|sqlpatch|thumb|thumb_editor|thumbopen|timthumb|webshell)\.php 11;
+}
+
+# Request methods
+map $request_method $not_allowed_method {
+    default 0;
+    ~*^(connect) 1;
+    ~*^(debug) 2;
+    ~*^(delete) 3;
+    ~*^(move) 4;
+    ~*^(patch) 5;
+    ~*^(put) 6;
+    ~*^(trace) 7;
+    ~*^(track) 8;
+}
+EOF
+
+
+
+# create /etc/nginx/common/cache_enabler.conf which contains needed configuration for the Cache Enabler plugin
+echo "Installing cache enabler nginx entries..."
+cat > /etc/nginx/common/cache_enabler.conf << 'EOF'
+	# This file defines variables needed for the Cache Enabler WordPress plugin by KeyCDN
+	# It just defines variables and doesn't do much by iteslf.
+	# It's meant to be included in the site configuration
+
+    set $cache_uri $request_uri;
+
+	# bypass cache if POST requests or URLs with a query string
+    if ($request_method = POST) {
+        set $cache_uri 'nullcache';
+    }
+    if ($query_string != "") {
+        set $cache_uri 'nullcache';
+    }
+
+	# bypass cache if URLs containing the following strings
+    if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(index)?.xml|[a-z0-9-]+-sitemap([0-9]+)?.xml)") {
+        set $cache_uri 'nullcache';
+    }
+
+	# bypass cache if the cookies containing the following strings
+    if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_logged_in") {
+        set $cache_uri 'nullcache';
+    }
+
+	# custom sub directory e.g. /blog
+    set $custom_subdir '';
+
+	# default html files
+	# two variables with and without a slash need to be defined to satisfy following situations:
+	# https://myblog.com/hello-world
+	# https://myblog.com/hello-world/
+    set $cache_enabler_uri '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}index.html';
+    set $cache_enabler_uri2 '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}/index.html';
+
+	# webp html files
+	# two variables with and without a slash need to be defined to satisfy following situations:
+	# https://myblog.com/hello-world
+	# https://myblog.com/hello-world/
+    if ($http_accept ~* "image/webp") {
+        set $cache_enabler_uri '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}index-webp.html';
+        set $cache_enabler_uri2 '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}/index-webp.html';
+    }
+EOF
+
+
+echo '# block access to hidden files/dirs (except .well-known)
+location ~ /\.(?!well-known) {
+	deny all;
+}
+
+# do not allow running of any other cgi scripts
+location ~* .(pl|cgi|py|sh|lua)$ {
+	return 444;
+}
+
+# block download of .log and .sql files
+location ~\.(log|sql)$ {
+	deny all;
+}
+
+# block access to wp-content/updraft
+location ~ /(wp-content/updraft) {
+   deny all;
+}
+
+# deny access to .php files in the uploads directory
+location ~* /(?:uploads|files)/.*\.php\$ {
+   deny all;
+}
+
+# hide nginx version
+server_tokens off;
+
+# hide X-Powered-By header
+fastcgi_hide_header X-Powered-By;
+' > /etc/nginx/common/deny.conf
+
+
+
+# Getting WPCLI Packages
+echo "Getting and installing WPCLI packages..."
+wget https://github.com/wp-cli/builds/raw/gh-pages/deb/php-wpcli_2.4.0_all.deb  > /dev/null 2>&1
+dpkg -i php-wpcli_2.4.0_all.deb  > /dev/null 2>&1
+rm -f php-wpcli_2.4.0_all.deb  > /dev/null 2>&1
+wp cli update --yes  > /dev/null 2>&1
+
+
+
+# if aws cli is not present, install it
+if ! hash aws2 2>/dev/null; then
+	echo "Getting and installing AWS CLI..."
+    wget "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip"  > /dev/null 2>&1
+    unzip awscli-exe-linux-x86_64.zip  > /dev/null 2>&1
+    ./aws/install  > /dev/null 2>&1
+    rm -rf aws awscli-exe-linux-x86_64.zip  > /dev/null 2>&1
+fi
+
+
+
+# ufw
+echo "Configuring firewall..."
+apt-get install ufw -y > /dev/null 2>&1
+ssh_port=$(grep 'Port ' /etc/ssh/sshd_config | head -n 1 | cut -d " " -f 2)
+ufw default deny incoming > /dev/null 2>&1
+if [ $? -ne 0 ] 
+then
+	echo "Unable to setup default incoming firewall rules! This is not a fatal error but you should double-check your rules after this process is completed."
+fi
+ufw default allow outgoing > /dev/null 2>&1
+if [ $? -ne 0 ] 
+then
+	echo "Unable to setup default outgoing firewall rules! This is not a fatal error but you should double-check your rules after this process is completed."
+fi
+ufw allow $ssh_port > /dev/null 2>&1
+if [ $? -ne 0 ] 
+then
+	echo "Unable to setup ssh port on firewall! This is not a fatal error but you should double-check your rules after this process is completed."
+fi
+ufw allow 80 > /dev/null 2>&1
+if [ $? -ne 0 ] 
+then
+	echo "Unable to setup http port on firewall! This is not a fatal error but you should double-check your rules after this process is completed."
+fi
+ufw allow 443 > /dev/null 2>&1
+if [ $? -ne 0 ] 
+then
+	echo "Unable to setup https port on firewall! This is not a fatal error but you should double-check your rules after this process is completed."
+fi
+ufw --force enable > /dev/null 2>&1
+if [ $? -ne 0 ] 
+then
+	echo "Unable to activate firewall! This is not a fatal error but you should investigate this after this server process is complete."
+fi
+
+
+# pointer needed for the wp-sync script
+echo "### do not edit from here ###" >> /etc/ssh/sshd_config
+
+# restart nginx
+systemctl enable nginx
+systemctl restart nginx
+
+echo
+echo "Installation completed!"
+echo

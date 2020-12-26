@@ -47,6 +47,7 @@ class WPCD_Sample_AddOn {
 	public function required_files() {
 		include_once wpcd_path . 'includes/core/apps/wordpress-app/tabs/tabs.php';
 		include_once WPCDSAMPLE_PATH . '/includes/wpapp-tutorial04.php';
+		include_once WPCDSAMPLE_PATH . '/includes/wpapp-tutorial05.php';
 	}
 
 	/**
