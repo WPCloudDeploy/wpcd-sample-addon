@@ -27,6 +27,10 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 		// Hook to add a custom field into the custom fields array - this will link fields added to the screen using the hook above to a public array of fields.
 		add_action( 'init', array( $this, 'add_custom_fields' ), 10 );
 
+		// Filter to handle script file tokens - but we're not going to replace tokens.  We're going to replace the
+		// primary bash script name and path that installs WordPress.
+		add_filter( 'wpcd_wpapp_replace_script_tokens', array( $this, 'wpcd_wpapp_replace_script' ), 10, 7 );
+
 	}
 
 
@@ -88,6 +92,36 @@ class WPCD_WordPress_Tutorial_04 extends WPCD_APP {
 		$field2['script_merge'] = false;
 
 		WPCD_CUSTOM_FIELDS()->add_field( $field2['name'], $field2 );
+
+	}
+
+	/**
+	 * Set the script to use to create a new WordPress installation..
+	 *
+	 * Filter Hook: wpcd_wpapp_replace_script_tokens
+	 *
+	 * @param array  $new_array          Existing array of placeholder data.
+	 * @param array  $array              The original array of data passed into the core 'script_placeholders' function.
+	 * @param string $script_name        The name of the script being processed.
+	 * @param string $script_version     The version of script to be used.
+	 * @param array  $instance           Various pieces of data about the server or app being used. It can use the following keys:
+	 *      post_id: the ID of the post.
+	 * @param string $command            The command being constructed.
+	 * @param array  $additional         An array of any additional data we might need. It can use the following keys (non-exhaustive list):
+	 *    command: The command to use (a script may have multiple commands)
+	 *    domain: The domain of the site
+	 *    user: The user to action.
+	 *    email: The email to use.
+	 *    public_key: The path to the public key
+	 *    password: The password of the user.
+	 */
+	public function wpcd_wpapp_replace_script( $new_array, $array, $script_name, $script_version, $instance, $command, $additional ) {
+
+		if ( 'install_wordpress_site.txt' === $script_name ) {
+			$new_array['SCRIPT_URL'] = trailingslashit( WPCDSAMPLE_URL ) . 'includes/scripts/' . 'my_custom_install_wp_site.txt';
+		}
+
+		return $new_array;
 
 	}
 
