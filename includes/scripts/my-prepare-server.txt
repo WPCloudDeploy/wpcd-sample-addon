@@ -365,6 +365,18 @@ if [ $? -ne 0 ]
 then
 	echo "Unable to setup https port on firewall! This is not a fatal error but you should double-check your rules after this process is completed."
 fi
+
+# Customization...
+echo "Handling port25 - customized"
+if [[ $port_25 == 1 ]]; then
+	echo "opening port 25.."
+	ufw allow 25 > /dev/null 2>&1
+	if [ $? -ne 0 ] 
+	then
+		echo "Unable to setup port 25 on firewall!."
+	fi	
+fi
+
 ufw --force enable > /dev/null 2>&1
 if [ $? -ne 0 ] 
 then
