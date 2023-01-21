@@ -1,6 +1,6 @@
 # Description #
 
-***A sample extension/add-on for the WPCloud Deploy WordPress plugin.***
+***A sample extension/add-on for the WPCloudDeploy WordPress plugin.***
 
 This plugin adds a "sample add-on" tab to the WPCD App Details page.
 In that tab, there is a button that updates all plugins on the site, one that updates all the themes and one that exports the database.
